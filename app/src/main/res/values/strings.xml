@@ -5,4 +5,5 @@
     <string name="roll">Roll</string>
     <string name="hold">Hold</string>
     <string name="reset">Reset</string>
+    <string name="turnScore">Turn Score:</string>
 </resources>
