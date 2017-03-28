@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -19,10 +20,10 @@ public class MainActivity extends AppCompatActivity {
     private Button rollButton;
     private Button holdButton;
 
-    private int userScore = 0;
-    private int userTurnScore = 0;
-    private int cpuScore = 0;
-    private int cpuTurnScore = 0;
+    private int userScore;
+    private int userTurnScore;
+    private int cpuScore;
+    private int cpuTurnScore;
 
     private Random random = new Random();
 
@@ -38,6 +39,15 @@ public class MainActivity extends AppCompatActivity {
         rollButton = (Button) findViewById(R.id.rollButton);
         holdButton = (Button) findViewById(R.id.holdButton);
 
+        userScoreTextView.setText("Player Score: 0");
+        cpuScoreTextView.setText("Computer Score: 0");
+        turnScoreTextView.setText("Turn Score: 0");
+
+        userScore = 0;
+        userTurnScore = 0;
+        cpuScore = 0;
+        cpuTurnScore = 0;
+
     }
 
     public void reset(View view)
@@ -48,39 +58,31 @@ public class MainActivity extends AppCompatActivity {
         userScore = 0;
         cpuScore = 0;
 
-        userScoreTextView.setText(R.string.player_score + 0);
-        cpuScoreTextView.setText(R.string.cpu_score + 0);
-        turnScoreTextView.setText(R.string.turnScore + 0);
+        userScoreTextView.setText("Player Score: 0");
+        cpuScoreTextView.setText("Computer Score: 0");
+        turnScoreTextView.setText("Turn Score: 0");
+    }
+
+    public void holdTurn (View view) {
+        userScore += userTurnScore;
+        userTurnScore = 0;
+        userScoreTextView.setText("Player Score: " + userScore);
+        computerTurn();
     }
 
     public void rollDice(View view)
     {
         int roll = rollDice();
-        switch (roll){
-            case 0: {
-
-                break;
-            }
-            case 1: {
-
-                break;
-            }
-            case 2: {
-
-                break;
-            }
-            case 3: {
-
-                break;
-            }
-            case 4: {
-
-                break;
-            }
-            case 5: {
-
-                break;
-            }
+        if (roll == 1)
+        {
+            userTurnScore = 0;
+            turnScoreTextView.setText("Turn Score: 0");
+            computerTurn();
+        }
+        else
+        {
+            userTurnScore += roll;
+            turnScoreTextView.setText("Turn Score: " + userTurnScore);
         }
     }
 
@@ -101,6 +103,32 @@ public class MainActivity extends AppCompatActivity {
             case 5: diceImageView.setImageDrawable(getResources().getDrawable(R.drawable.dice6));
                 break;
         }
-        return roll;
+        return roll + 1;
     }
+
+    private void computerTurn()
+    {
+        holdButton.setEnabled(false);
+        rollButton.setEnabled(false);
+
+        boolean rollOne = false;
+        while (cpuTurnScore < 20 && !rollOne)
+        {
+            int roll = rollDice();
+            if (roll == 1)
+            {
+                cpuTurnScore = 0;
+                turnScoreTextView.setText("Turn Score: 0");
+                rollOne = true;
+                Toast.makeText(this, "CPU Holds", Toast.LENGTH_SHORT);
+            }
+            else
+            {
+                cpuTurnScore += roll;
+                turnScoreTextView.setText("Turn Score: " + cpuTurnScore);
+                rollOne = false;
+            }
+        }
+    }
+
 }
