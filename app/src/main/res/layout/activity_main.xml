@@ -15,20 +15,12 @@
         tools:layout_editor_absoluteY="16dp" />
 
     <TextView
-        android:id="@+id/playerScoreTextView"
+        android:id="@+id/yourScoreTextView"
         android:layout_width="173dp"
         android:layout_height="24dp"
         android:text="@string/player_score"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp" />
-
-    <ImageView
-        android:id="@+id/diceImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/dice1"
-        tools:layout_editor_absoluteX="122dp"
-        tools:layout_editor_absoluteY="64dp" />
 
     <Button
         android:id="@+id/holdButton"
@@ -53,5 +45,13 @@
         android:text="@string/roll"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="245dp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/dice1"
+        tools:layout_editor_absoluteX="135dp"
+        tools:layout_editor_absoluteY="68dp" />
 
 </android.support.constraint.ConstraintLayout>
