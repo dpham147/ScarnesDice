@@ -1,6 +1,7 @@
 package edu.orangecoastcollege.cs273.scarnesdice;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView cpuScoreTextView;
     private TextView turnScoreTextView;
     private ImageView diceImageView;
+    private TextView dialogueTextView;
 
     private Button rollButton;
     private Button holdButton;
@@ -24,6 +26,10 @@ public class MainActivity extends AppCompatActivity {
     private int userTurnScore;
     private int cpuScore;
     private int cpuTurnScore;
+
+    private Handler handler = new Handler();
+
+    private static final int VICTORY = 100;
 
     private Random random = new Random();
 
@@ -38,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         turnScoreTextView = (TextView) findViewById(R.id.turnScoreTextView);
         rollButton = (Button) findViewById(R.id.rollButton);
         holdButton = (Button) findViewById(R.id.holdButton);
+        dialogueTextView = (TextView) findViewById(R.id.dialogueTextView);
 
         userScoreTextView.setText("Player Score: 0");
         cpuScoreTextView.setText("Computer Score: 0");
@@ -61,22 +68,37 @@ public class MainActivity extends AppCompatActivity {
         userScoreTextView.setText("Player Score: 0");
         cpuScoreTextView.setText("Computer Score: 0");
         turnScoreTextView.setText("Turn Score: 0");
+        dialogueTextView.setText("");
+
+        rollButton.setEnabled(true);
+        holdButton.setEnabled(true);
     }
 
     public void holdTurn (View view) {
         userScore += userTurnScore;
         userTurnScore = 0;
         userScoreTextView.setText("Player Score: " + userScore);
-        computerTurn();
+
+        if (userScore > VICTORY)
+        {
+            rollButton.setEnabled(false);
+            holdButton.setEnabled(false);
+            Toast.makeText(this, "YOU WIN!!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+
+            computerTurn();
+        }
     }
 
     public void rollDice(View view)
     {
         int roll = rollDice();
-        if (roll == 1)
-        {
+        dialogueTextView.setText("");
+        if (roll == 1) {
             userTurnScore = 0;
             turnScoreTextView.setText("Turn Score: 0");
+
             computerTurn();
         }
         else
@@ -106,28 +128,99 @@ public class MainActivity extends AppCompatActivity {
         return roll + 1;
     }
 
+    private void cpuRoll()
+    {
+        int roll = rollDice();
+        if (roll == 1)
+        {
+            cpuTurnScore = 0;
+            turnScoreTextView.setText("Turn Score: 0");
+            dialogueTextView.setText("CPU Rolls a 1");
+        }
+        else {
+            cpuTurnScore += roll;
+            turnScoreTextView.setText("Turn Score: " + cpuTurnScore);
+
+            if (cpuTurnScore < 20) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (cpuTurnScore < 20) {
+                            cpuRoll();
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        if (cpuTurnScore >= 20) {
+            dialogueTextView.setText("CPU Holds");
+
+            cpuScore += cpuTurnScore;
+            cpuScoreTextView.setText("Computer Score: " + cpuScore);
+            cpuTurnScore = 0;
+            if (cpuScore > VICTORY) {
+                rollButton.setEnabled(false);
+                holdButton.setEnabled(false);
+                Toast.makeText(this, "CPU Wins!!", Toast.LENGTH_SHORT).show();
+            } else {
+                holdButton.setEnabled(true);
+                rollButton.setEnabled(true);
+            }
+        }
+
+    }
+
     private void computerTurn()
     {
+
         holdButton.setEnabled(false);
         rollButton.setEnabled(false);
 
-        boolean rollOne = false;
-        while (cpuTurnScore < 20 && !rollOne)
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                cpuRoll();
+            }
+        }, 500);
+
+
+//
+//        boolean rollOne = false;
+//        while (cpuTurnScore < 20 && !rollOne)
+//        {
+//            int roll = rollDice();
+//            if (roll == 1)
+//            {
+//                cpuTurnScore = 0;
+//                turnScoreTextView.setText("Turn Score: 0");
+//                rollOne = true;
+//                dialogueTextView.setText("CPU Rolls a 1");
+//            }
+//            else
+//            {
+//                cpuTurnScore += roll;
+//                turnScoreTextView.setText("Turn Score: " + cpuTurnScore);
+//                rollOne = false;
+//            }
+//        }
+//
+//        if (cpuTurnScore >= 20)
+//        {
+//            dialogueTextView.setText("CPU Holds");
+//        }
+        cpuScore += cpuTurnScore;
+        cpuScoreTextView.setText("Computer Score: " + cpuScore);
+        cpuTurnScore = 0;
+        if (cpuScore > VICTORY)
         {
-            int roll = rollDice();
-            if (roll == 1)
-            {
-                cpuTurnScore = 0;
-                turnScoreTextView.setText("Turn Score: 0");
-                rollOne = true;
-                Toast.makeText(this, "CPU Holds", Toast.LENGTH_SHORT);
-            }
-            else
-            {
-                cpuTurnScore += roll;
-                turnScoreTextView.setText("Turn Score: " + cpuTurnScore);
-                rollOne = false;
-            }
+            rollButton.setEnabled(false);
+            holdButton.setEnabled(false);
+            Toast.makeText(this, "CPU Wins!!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            holdButton.setEnabled(true);
+            rollButton.setEnabled(true);
         }
     }
 
